@@ -2,27 +2,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="30dp"
     tools:context=".MainActivity">
 
+    <!--<TextView-->
+    <!--android:id="@+id/txt_input"-->
+    <!--android:layout_width="382dp"-->
+    <!--android:layout_height="142dp"-->
+    <!--android:hint="Enter Your Reaction"-->
+    <!--android:inputType="textEmailAddress"-->
+    <!--android:textSize="20sp"-->
+    <!--android:counterEnabled="true"-->
+    <!--android:counterMaxLength="20"-->
+    <!--android:errorEnabled="true" />-->
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/txt_ChemicalReaction"
-        android:layout_width="382dp"
-        android:layout_height="142dp">
 
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="365dp"
-            android:layout_height="62dp"
-            android:hint="Enter Your Reaction"
-            android:inputType="textEmailAddress"
-            android:textSize="20sp"
-            app:counterEnabled="true"
-            app:counterMaxLength="20"
-            app:errorEnabled="true" />
-    </android.support.design.widget.TextInputLayout>
+    <EditText
+        android:id="@+id/txt_input"
+        android:layout_width="match_parent"
+        android:layout_height="116dp"
+        android:hint="Enter Unbalanced Equation..."
+        android:textSize="24sp"
+        android:visibility="visible" />
 
 
     <Button
@@ -31,27 +33,35 @@
         android:layout_width="match_parent"
         android:layout_height="85dp"
         android:background="@color/colorPrimaryDark"
-        android:onClick="solve"
         android:text="Solve!"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textColor="@android:color/background_light"
-        android:textSize="30dp"
-        />
+        android:textSize="30dp" />
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/txt-ChemicalReactionBalanced"
-        android:layout_width="382dp"
-        android:layout_height="140dp"
-        android:hint="Balanced Equation..."
-        app:counterEnabled="true"
-        app:counterMaxLength="20"
-        app:errorEnabled="true">
 
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="365dp"
-            android:layout_height="62dp"
-            android:inputType="textEmailAddress"
-            android:textSize="20sp" />
-    </android.support.design.widget.TextInputLayout>
+    <EditText
+        android:id="@+id/txt_solved"
+        android:layout_width="match_parent"
+        android:layout_height="102dp"
+        android:hint="Result"
+        android:textSize="24sp"
+        android:visibility="visible" />
 
-</LinearLayout >
+
+    <!--<android.support.design.widget.TextInputLayout-->
+    <!--android:id="@+id/txt_solved"-->
+    <!--android:layout_width="382dp"-->
+    <!--android:layout_height="140dp"-->
+    <!--android:hint="Balanced Equation..."-->
+    <!--app:counterEnabled="true"-->
+    <!--app:counterMaxLength="20"-->
+    <!--app:errorEnabled="true">-->
+
+    <!--<android.support.design.widget.TextInputEditText-->
+    <!--android:layout_width="365dp"-->
+    <!--android:layout_height="62dp"-->
+    <!--android:inputType="textEmailAddress"-->
+    <!--android:textSize="20sp" />-->
+    <!--</android.support.design.widget.TextInputLayout>-->
+
+</LinearLayout>

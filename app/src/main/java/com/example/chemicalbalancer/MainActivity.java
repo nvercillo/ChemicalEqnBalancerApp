@@ -4,81 +4,47 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import java.util.logging.Logger;
+
+/*
+ASSUMPTIONS MADE
+Input must be formatted like this C2H6 + O2 --> CO2 + H2O or like this
+
+There may only be one polyatomic ion per molecule
+There are no charges to balance
+Polyatomic ions must be attached to an element such that the charges balance
+Polyatomic ions must be attached to open and close brackets ()
+ */
 
 public class MainActivity extends AppCompatActivity {
 
     private TextInputLayout textInputChemRxn;
-    private static String userInput = null;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        textInputChemRxn = findViewById(R.id.txt_ChemicalReaction);
+    private String userInput = null;
+    private Button submitBtn;
+    private TextView input;
+    private TextView result;
+    private List<String> elementStr;
 
-//      CALL VALIDATE PROPER STRING FUNCTION
-        userInput = textInputChemRxn.getEditText().getText().toString().trim();
-        LOG.info("text input from client is registered as null");
-
-
-    }
-
-    public static void main(String[] args) {
-//        receiving and splitting data into elements
-        String[] eqnSplitter = userInput.split(" --> ");
-        String[] rxnStrings = eqnSplitter[0].split(" \\+ ");
-        String[] prodStrings = eqnSplitter[1].split(" \\+ ");
-        List<String> elementStrings = elementStrings(rxnStrings, prodStrings);
-        List<String> uniqueElements = uniqueElement(elementStrings, rxnStrings);
-        List<List<StringAndInteger>> rankListEachMole = rankListEachMole(elementStrings);
-        List<List<StringAndInteger>> rankList = new ArrayList<>();
-        for (List<StringAndInteger> siList : rankListEachMole){
-            rankList.add(zeroPutter(siList, uniqueElements));
-        }
-        double[][] rref = rref(matrix(rankList));
-
-        List<Integer> balancedEquation = balancedNumbers(rref,uniqueElements,rxnStrings,prodStrings);
-        String s = balancedEquation(elementStrings, balancedEquation);
-        System.out.println(s);
-    }
-
-    private void setError (String error){
-        textInputChemRxn.setError(error);
-    }
-
-    private boolean validateReaction (){
-//        fill in method to check if chemical reaction will pass
-
-        if(0 ==0 ){
-            textInputChemRxn.setError(null);
-//            textInputChemRxn.setErrorEnabled(false);
-            return true;
-        }
-        textInputChemRxn.setError("Enter this equation.... ");
-        return false;
-
-    }
-
-
-    /*
-    ASSUMPTIONS MADE
-    Input must be formatted like this C2H6 + O2 --> CO2 + H2O or like this
-    BaCl2 + Al2(SO4)3 --> Ba(SO4)3 + AlCl3
-    There may only be one polyatomic ion per molecule
-    There are no charges to balance
-    Polyatomic elements must be attached to an element such that the charges balance
-     */
     private static final Logger LOG = Logger.getLogger(MainActivity.class.getName());
 
     public static class StringAndInteger {
@@ -106,7 +72,77 @@ public class MainActivity extends AppCompatActivity {
     //    Import this list from python script
     public static List<String> polyatomicList = Arrays.asList("(NH4)", "(NO2)", "(NO3)", "(NO4)", "(SO3)","(SO4)", "(SO2)", "(OH)");
 
+    public  String balancedEquation (String input) throws ConcurrentModificationException {
+//        receiving and splitting data into elements
+        input = input.replaceAll("\\n", "");
+        String[] eqnSplitter = input.split(" --> ");
+        String[] rxnStrings = eqnSplitter[0].split(" \\+ ");
+        String[] prodStrings = eqnSplitter[1].split(" \\+ ");
+        List<String> elementStrings = elementStrings(rxnStrings, prodStrings);
+        List<String> uniqueElements = uniqueElement(elementStrings, rxnStrings);
+        List<List<StringAndInteger>> rankListEachMole = rankListEachMole(elementStrings);
+        List<List<StringAndInteger>> rankList = new ArrayList<>();
+        for (List<StringAndInteger> siList : rankListEachMole){
+            rankList.add(zeroPutter(siList, uniqueElements));
+        }
+        double[][] rref = rref(matrix(rankList));
 
+        List<Integer> balancedEquation = balancedNumbers(rref,uniqueElements,rxnStrings,prodStrings);
+        String s = balancedEquation(elementStrings, balancedEquation);
+
+
+
+//        This is for error (notifications) PUT AN IMAGE IN IF CONFIRMED USING this API
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+
+        return s;
+    }
+
+    private void setViews () {
+        submitBtn = findViewById(R.id.btn_submit);
+        input = findViewById(R.id.txt_input);
+        result = findViewById(R.id.txt_solved);
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+//        textInputChemRxn = findViewById(R.id.txt_input);
+//      CALL VALIDATE PROPER STRING FUNCTION
+
+        setViews();
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rrefList.clear();
+                result.setText(balancedEquation(input.getText().toString().trim()));
+            }
+        });
+
+//        userInput = textInputChemRxn.getEditText().getText().toString().trim();
+//        LOG.info("text input from client is registered as null");
+
+
+    }
+
+    private void setError (String error){
+        textInputChemRxn.setError(error);
+    }
+
+    private boolean validateReaction (){
+//        fill in method to check if chemical reaction will pass
+
+        if(0 ==0 ){
+            textInputChemRxn.setError(null);
+//            textInputChemRxn.setErrorEnabled(false);
+            return true;
+        }
+        textInputChemRxn.setError("Enter this equation.... ");
+        return false;
+
+    }
     public static Integer whereIsPolyatomic (String string, List<String> polyatomicElements ) {
         for(String str: polyatomicElements){
             if (string.contains(str)){
@@ -134,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     Consideration: this method as the polyatomic ion to te beginning of the list instead of at
     the end. This should be correct when the sort occurs.
     */
-//    BaCl2 + Al2(SO4)3 --> Ba(SO4)3 + AlCl3
+//
 //    Cu + Ag(NO3) --> Ag + Cu(NO3)2
 
 //    THIS FUNCTION IS FUCKED
@@ -173,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //    BaCl2 + Al2(SO4)3 --> Ba(SO4)3 + AlCl3
+    //
 //    BROKENN!!!!
     public static List<String> uniqueElement(List<String> moleStrList, String[] rxnArr) {
 
@@ -191,26 +227,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        List<String> polyatomics = new ArrayList<>();
-        for (String s :uniqueElements){
-            String str = "(" + s + ")";
-            int ind = whereIsPolyatomic(str, polyatomicList);
-            if (ind != -1){
-                uniqueElements.remove(s);
-                polyatomics.add(s);
-            }
-        }
-
-        Collections.sort(polyatomics);
-        List<String> uniqueElements2 = new ArrayList<>(polyatomics);
-
         Collections.sort(uniqueElements);
-        uniqueElements2.addAll(uniqueElements);
-
-        return (uniqueElements2);
+        return (uniqueElements);
     }
 
-    //    BaCl2 + Al2(SO4)3 --> Ba(SO4)3 + AlCl3
+    //
     public static StringAndInteger elementInfoOneMole(String elementwNum) {
 //        This passes a single element wihtin a molecule string, for example it would pass O2 or Ca for example
         String string = elementwNum;
@@ -244,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     //    Pb(SO4) > 10PBSO3 + 3O2
-//    BaCl2 + Al2(SO4)3 --> Ba(SO4)3 + AlCl3
+//
 //    Note: Polyatomic ions are always listed first in the rankLIst
     public static List<List<StringAndInteger>> rankListEachMole(List<String> elementStrings) {
         List<List<StringAndInteger>> rankListEachMole = new ArrayList<>();
@@ -289,7 +310,6 @@ public class MainActivity extends AppCompatActivity {
         return zeroPutter;
     }
 
-    //    BaCl2 + Al2(SO4)3 --> Ba(SO4)3 + AlCl3
     public static double[][] matrix(List<List<StringAndInteger>> rankList) {
 //         3
         int m = rankList.get(0).size();
@@ -306,37 +326,142 @@ public class MainActivity extends AppCompatActivity {
 
         return matrix;
     }
+    private static List<double[][]> rrefList = new ArrayList<>();
 
+    private static boolean isUnique (double[][] rref){
+        Set<double[][]> rrefSet = new HashSet<>(rrefList);
+        return rrefSet.size() == rrefList.size();
+    }
     //        C2H6 + O2 --> CO2 + H2O
     private static double[][] rref(double[][] matrix) {
-        double[][] rref = new double[matrix.length][];
-        for (int i = 0; i < matrix.length; i++)
-            rref[i] = Arrays.copyOf(matrix[i], matrix[i].length);
+        double[][] rref = matrix;
+        Set<double[][]> rrefSet = new HashSet<>(rrefList);
+        while (isUnique(rref)){
+            rref = rowReducer(rref);
+        }
 
-        int r = 0;
-        for (int c = 0; c < rref[0].length && r < rref.length; c++) {
-            int j = r;
-            for (int i = r + 1; i < rref.length; i++)
-                if (Math.abs(rref[i][c]) > Math.abs(rref[j][c]))
-                    j = i;
-            if (Math.abs(rref[j][c]) < 0.00001)
-                continue;
+        rref = orderMatrixRows(rref);
+        rref = reducedMatrix(rref);
+        return rref;
+    }
 
-            double[] temp = rref[j];
-            rref[j] = rref[r];
-            rref[r] = temp;
+    private static Map<int[], Double> pivotMapper(double[][] matrix) {
+        double[][] rref = matrix;
+        List<Integer> pivotRows = new ArrayList<>();
 
-            double s = 1.0 / rref[r][c];
-            for (j = 0; j < rref[0].length; j++)
-                rref[r][j] *= s;
-            for (int i = 0; i < rref.length; i++) {
-                if (i != r) {
-                    double t = rref[i][c];
-                    for (j = 0; j < rref[0].length; j++)
-                        rref[i][j] -= t * rref[r][j];
+//        key for hashmap will be the column # and the value will be the pivot value
+        Map<int[], Double> pivotMap = new HashMap<>();
+        for (int t = 0; t < rref[0].length; t++) {
+            double pivot = -1;
+            int pivotRow = 0;
+            for (int s = 0; s < rref.length; s++) {
+                double st = rref[s][t];
+//                there can only be one pivot per column
+                if (st != 0 && pivot == -1 && !pivotRows.contains(s)) {
+                    pivot = rref[s][t];
+                    pivotRows.add(s);
+                    int[] array = new int[]{s, t};
+                    pivotMap.put(array, pivot);
                 }
             }
-            r++;
+        }
+        pivotMap = mapSorter(pivotMap);
+        return pivotMap;
+
+    }
+
+    private static double[][] rowReducer(double[][] matrix) {
+        double[][] rref = matrix;
+        Map<int[], Double> pivotMap = (pivotMapper(rref));
+
+        for (Map.Entry<int[], Double> entry : pivotMap.entrySet()) {
+            boolean isChanged = false;
+            double pivot = entry.getValue();
+            int i = entry.getKey()[0];
+            int j = entry.getKey()[1];
+            double[] pivotRow = rref[i];
+
+            for (int s = 0; s < rref.length; s++) {
+                double mul = -(rref[s][j]/ pivot);
+                if (rref[s][j] != 0 && s != i){
+                    for (int t=0; t<rref[0].length; t++){
+                        double d = rref[s][j];
+                        rref[s][t] = rref[s][t] + mul * rref[i][t];
+                        isChanged =true;
+                    }
+                }
+            }
+            if (isChanged)
+                break;
+
+        }
+        rrefList.add(rref);
+        return rref;
+    }
+
+    private static Map<int[], Double> mapSorter(Map<int[], Double> pivotMap) {
+        Map<int[], Double> hashMap = new LinkedHashMap<>();
+        List<Map.Entry<int[], Double>> entryList = new ArrayList<>(pivotMap.entrySet());
+
+        Collections.sort(entryList, new Comparator<Map.Entry<int[], Double>>() {
+            @Override
+            public int compare(Map.Entry<int[], Double> o1, Map.Entry<int[], Double> o2) {
+                return o1.getKey()[1] - o2.getKey()[1];
+            }
+        });
+
+        for (Map.Entry<int[], Double> e : entryList){
+            hashMap.put(e.getKey(), e.getValue());
+        }
+        return hashMap;
+    }
+
+    private static double[][] orderMatrixRows(double[][] matrix) {
+        List<double[]> rows = new ArrayList<>();
+        List<double[]> nonPivotRows = new ArrayList<>();
+        double[][] rref = new double[matrix.length][matrix[0].length];
+        for (int t = 0; t < matrix[0].length - 1; t++) {
+            for (int s = 0; s < matrix.length; s++) {
+                if (matrix[s][t] != 0) {
+                    double[] row = matrix[s];
+                    rows.add(row);
+                }
+            }
+        }
+        for (int i = 0; i < rows.size(); i++) {
+            rref[i] = rows.get(i);
+        }
+        return rref;
+    }
+
+    private static double[][] reducedMatrix(double[][] matrix) {
+        List<double[]> doubList = new ArrayList<>();
+        double[][] rref = matrix;
+        List<Double> pivotList = new ArrayList<>();
+        for (double[] doub : matrix) {
+            for (double d : doub) {
+                if (d != 0) {
+                    pivotList.add(d);
+                    break;
+
+                }
+            }
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            double[] doub = matrix[i];
+            double[] row = new double[doub.length];
+            double pivot = pivotList.get(i);
+            for (int j = 0; j < doub.length; j++) {
+                if (doub[j] != 0) {
+                    double val = doub[j] / pivot;
+                    row[j] = val;
+                }
+            }
+            doubList.add(row);
+        }
+
+        for (int i = 0; i < doubList.size(); i++) {
+            rref[i] = doubList.get(i);
         }
         return rref;
     }
@@ -418,6 +543,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 //        C3H8 + O2 --> CO2 + H2O
+//        C2H6 + O2 --> CO2 + H2O
 //        CH6 + O2 --> CO2 + H2O
 //        Cu + Ag(NO3) --> Ag + Cu(NO3)2
 //        Al2O3 + Fe --> Fe3O4 + Al
@@ -425,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
 //        Al + H2(SO4) --> Al2(SO4)3 + H2
 
 //WHY CANT IT SOLVE THIS ONE???
-//        Al2(SO3)3 + Na(OH) --> Na2(SO3) + Al(OH)3
+//        Al2(SO3)3 + NaOH --> Na2(SO3) + AlO3H3
 
 
     /*    ==================================================
@@ -460,6 +586,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
-
-
 }

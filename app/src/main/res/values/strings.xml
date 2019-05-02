@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ChemicalBalancer</string>
+    <string name="balanced_equation">Balanced Equation...</string>
+    <string name="string_balanced_equation">input</string>
 </resources>
