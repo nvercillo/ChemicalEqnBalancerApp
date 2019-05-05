@@ -3,7 +3,6 @@ package com.example.chemicalbalancer;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -35,7 +34,7 @@ Polyatomic ions must be attached to an element such that the charges balance
 Polyatomic ions must be attached to open and close brackets ()
  */
 
-public class MainActivity extends AppCompatActivity {
+public class ChemicalBalancer extends AppCompatActivity {
 
     private TextInputLayout textInputChemRxn;
 
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView result;
     private List<String> elementStr;
 
-    private static final Logger LOG = Logger.getLogger(MainActivity.class.getName());
+    private static final Logger LOG = Logger.getLogger(ChemicalBalancer.class.getName());
 
     public static class StringAndInteger {
         public String element;
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 //        This is for error (notifications) PUT AN IMAGE IN IF CONFIRMED USING this API
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "SOLVED!!!", Toast.LENGTH_SHORT).show();
 
         return s;
     }
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.chemical_balancer);
 //        textInputChemRxn = findViewById(R.id.txt_input);
 //      CALL VALIDATE PROPER STRING FUNCTION
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RulesPage"
+    android:padding="30dp">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INSTRUCTIONS"
+        android:textSize="40dp"
+        tools:layout_editor_absoluteX="40dp"
+        tools:layout_editor_absoluteY="16dp" />
+    <!--app:layout_editor_absoluteX="100dp"-->
+    <!--app:layout_editor_absoluteY="100dp"-->
+    <!---->
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Click the balance button and enter your balanced equation.  Make sure that any polyatomic element is surrounded in brackets, (xxx) and is at the end of any molecule. There can only be one polyatomic element per molecule. The molecules must be entered with a space between each of the reactants and products and the operation beside it. For multiple reactants/products, the elements must be added with a + The reactants going to products must be shown as follows: -->. The following two equations demonstrate proper input:                                              C2H6 + O2 --> CO2 + H2O                                                  Al + H2(SO4) --> Al2(SO4)3 + H2          "
+        android:textSize="20dp"
+        tools:layout_editor_absoluteX="58dp"
+        tools:layout_editor_absoluteY="167dp" />
+
+</android.support.constraint.ConstraintLayout>
